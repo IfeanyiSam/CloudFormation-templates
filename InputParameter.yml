@@ -1,3 +1,20 @@
+Parameters:
+  NameOfService: 
+    Description: "The name of the service this stack is being used for"
+    Type: String
+  InstanceTypeParameter:
+    Type: String
+    Default: t2.micro
+    AllowedValues:
+      - t2.micro
+      - t2.small
+      - t2.medium
+      - m1.small
+      - m1.large
+    Description: Enter t2.micro, m1.small, or m1.large. Default is t2.micro.
+  KeyName:
+    Description: Name of EC2 login key 
+    Type: AWS::EC2::KeyPair::KeyName
 Mappings: 
   AMIRegionMap: 
     us-east-1: 
@@ -10,14 +27,15 @@ Resources:
   MyInstance:
     Type: AWS::EC2::Instance
     Properties:
-      InstanceType: t2.micro
+      InstanceType: !Ref InstanceTypeParameter
+      KeyName: !Ref KeyName
       ImageId: !FindInMap
         - AMIRegionMap
         - !Ref AWS::Region
         - AMI
       Tags:
         - Key: "Name"
-          Value: !Join ["-", [my, inst, from, cloudformation]]
+          Value: !Ref NameOfService
       SecurityGroups:
         - !Ref VprofileSG
 
